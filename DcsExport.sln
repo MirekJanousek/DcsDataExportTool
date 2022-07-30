@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DCSExporterApp", "DCSExporterApp\DCSExporterApp.csproj", "{48179230-B8F4-4CF1-A910-AE58296EC497}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DcsExportLib", "DcsExportLib\DcsExportLib.csproj", "{21142810-16EF-402D-B1BA-EBFB08C23243}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{48179230-B8F4-4CF1-A910-AE58296EC497}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48179230-B8F4-4CF1-A910-AE58296EC497}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48179230-B8F4-4CF1-A910-AE58296EC497}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48179230-B8F4-4CF1-A910-AE58296EC497}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21142810-16EF-402D-B1BA-EBFB08C23243}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21142810-16EF-402D-B1BA-EBFB08C23243}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21142810-16EF-402D-B1BA-EBFB08C23243}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21142810-16EF-402D-B1BA-EBFB08C23243}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {55A6B37F-DBBC-4A29-B5B9-2F91B0B7F8E2}
+	EndGlobalSection
+EndGlobal
