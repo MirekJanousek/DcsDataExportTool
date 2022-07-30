@@ -1,9 +1,8 @@
-﻿using DcsClickableExportLib.Models;
-
+﻿using DcsExportLib.Models;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Loaders;
 
-namespace DcsClickableExportLib.Exporters
+namespace DcsExportLib.Exporters
 {
     internal class CommonClickableDataExporter : IClickableDataExporter
     {

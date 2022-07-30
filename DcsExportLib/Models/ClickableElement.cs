@@ -1,4 +1,4 @@
-﻿namespace DcsClickableExportLib.Models
+﻿namespace DcsExportLib.Models
 {
     /// <summary>
     /// Clickable element representing cockpit clickable element

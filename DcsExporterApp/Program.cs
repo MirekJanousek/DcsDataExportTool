@@ -1,15 +1,12 @@
-﻿using DCSLookupApp;
-using DcsClickableExportLib;
-using DcsClickableExportLib.Models;
-using MoonSharp.Interpreter;
-using MoonSharp.Interpreter.Loaders;
+﻿using DCSExporterApp;
+using DcsExportLib;
+using DcsExportLib.Models;
 
 // TODO MJ: path should be in config
 string dcsPath = @"y:\Games\DCS World OpenBeta";
 
-ModuleLookup moduleLookup = new ModuleLookup();
+IModuleLookup moduleLookup = DcsExporterBuilder.CreateModuleLookup();
 var modules = moduleLookup.GetInstalledModules(dcsPath);
-
 
 ConsoleAppManager consoleAppManager = new ConsoleAppManager();
 consoleAppManager.SetConsoleTitle();
@@ -18,7 +15,10 @@ DcsModuleInfo selectedModule = consoleAppManager.PromptSelectModule(modules);
 
 consoleAppManager.DisplayExportStartedMessage(selectedModule);
 
-DcsExporter exporter = new DcsExporter(dcsPath);
+// TODO MJ: get from app configuration
+ExporterConfig config = new ExporterConfig { DcsPath = dcsPath };
+
+IDcsExporter exporter = DcsExporterBuilder.CreateExporter(config);
 exporter.ExportClickableData(selectedModule);
 
 Console.ReadLine();

@@ -1,9 +1,9 @@
-﻿using DcsClickableExportLib.Extensions;
-using DcsClickableExportLib.Models;
+﻿using DcsExportLib.Extensions;
+using DcsExportLib.Models;
 
-namespace DcsClickableExportLib
+namespace DcsExportLib
 {
-    public class ModuleLookup : IModuleLookup
+    internal class ModuleLookup : IModuleLookup
     {
         private const string DisplayNameProperty = "displayName";
         private const string InfoProperty = "info";

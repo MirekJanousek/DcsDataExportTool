@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace DcsClickableExportLib.Extensions
+namespace DcsExportLib.Extensions
 {
     internal static class StringExtensions
     {

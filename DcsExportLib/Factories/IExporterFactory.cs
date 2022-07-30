@@ -1,7 +1,7 @@
-﻿using DcsClickableExportLib.Exporters;
-using DcsClickableExportLib.Models;
+﻿using DcsExportLib.Exporters;
+using DcsExportLib.Models;
 
-namespace DcsClickableExportLib.Factories;
+namespace DcsExportLib.Factories;
 
 internal interface IExporterFactory
 {

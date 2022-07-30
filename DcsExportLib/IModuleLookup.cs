@@ -1,6 +1,6 @@
-﻿using DcsClickableExportLib.Models;
+﻿using DcsExportLib.Models;
 
-namespace DcsClickableExportLib;
+namespace DcsExportLib;
 
 public interface IModuleLookup
 {
