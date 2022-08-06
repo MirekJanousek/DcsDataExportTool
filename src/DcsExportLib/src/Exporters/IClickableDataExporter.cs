@@ -1,6 +1,6 @@
-﻿using DcsClickableExportLib.Models;
+﻿using DcsExportLib.Models;
 
-namespace DcsClickableExportLib.Exporters;
+namespace DcsExportLib.Exporters;
 
 internal interface IClickableDataExporter
 {

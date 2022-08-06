@@ -1,4 +1,4 @@
-﻿namespace DcsClickableExportLib.Models
+﻿namespace DcsExportLib.Models
 {
     public class DcsModuleInfo
     {

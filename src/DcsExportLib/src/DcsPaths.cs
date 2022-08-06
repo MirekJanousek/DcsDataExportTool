@@ -1,4 +1,4 @@
-﻿namespace DcsClickableExportLib
+﻿namespace DcsExportLib
 {
     internal class DcsPaths
     {

@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DcsExportLib\DcsExportLib.csproj" />
+    <ProjectReference Include="..\..\DcsExportLib\src\DcsExportLib.csproj" />
   </ItemGroup>
 
 </Project>

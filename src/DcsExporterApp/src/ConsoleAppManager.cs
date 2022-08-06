@@ -1,8 +1,7 @@
-﻿using DcsClickableExportLib.Models;
+﻿using System.Reflection;
+using DcsExportLib.Models;
 
-using System.Reflection;
-
-namespace DCSLookupApp
+namespace DCSExporterApp
 {
     internal class ConsoleAppManager
     {
@@ -44,19 +43,21 @@ namespace DCSLookupApp
                 counter++;
             }
         }
+
         private int PromptUserNumberEntry(string infoStr, int min, int max)
         {
-            Console.Write(infoStr);
-            string? userEntry = Console.ReadLine();
-            
-            if (int.TryParse(userEntry, out int optionInt))
+            while (true)
             {
-                if (optionInt <= max && optionInt >= min)
-                    return optionInt;
-            }
+                Console.Write(infoStr);
+                string? userEntry = Console.ReadLine();
 
-            Console.WriteLine("Incorrect entry");
-            return PromptUserNumberEntry(infoStr, min, max);
+                if (int.TryParse(userEntry, out int optionInt))
+                {
+                    if (optionInt <= max && optionInt >= min) return optionInt;
+                }
+
+                Console.WriteLine("Incorrect entry");
+            }
         }
     }
 }

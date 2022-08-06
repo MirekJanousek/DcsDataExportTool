@@ -1,28 +1,26 @@
-﻿using DcsClickableExportLib.Exporters;
-using DcsClickableExportLib.Factories;
-using DcsClickableExportLib.Models;
+﻿using DcsExportLib.Exporters;
+using DcsExportLib.Factories;
+using DcsExportLib.Models;
 
-using MoonSharp.Interpreter;
-using MoonSharp.Interpreter.Loaders;
-
-namespace DcsClickableExportLib
+namespace DcsExportLib
 {
     /// TODO MJ:
     /// Get script paths by module (enum?, config file with paths?)
 
-    public class DcsExporter : IDcsExporter
+    internal class DcsExporter : IDcsExporter
     {
-        private readonly string dcsPath_;
+        // TODO MJ: implement ILogger
+        //private readonly ILogger logger_;
 
-        public DcsExporter(string dcsPath)
-        {
-            dcsPath_ = dcsPath ?? throw new ArgumentNullException(nameof(dcsPath));
-        }
+        public ExporterConfig Config { get; set; } = new();
 
         public void ExportClickableData(DcsModuleInfo moduleInfo)
         {
             if(moduleInfo == null)
                 throw new ArgumentNullException(nameof(moduleInfo));
+
+            // TODO MJ: check existing Config
+            ValidationConfiguration();
 
             // TODO MJ: validation of the selected module in case someone fills it manually when used as library
             ExporterFactory exporterFactory = new ExporterFactory();
@@ -52,6 +50,12 @@ namespace DcsClickableExportLib
             //    sb.Clear();
             //}
 
+        }
+
+        private void ValidationConfiguration()
+        {
+            if (string.IsNullOrWhiteSpace(Config.DcsPath))
+                throw new ArgumentException("DCS installation path is missing!");
         }
     }
 }
