@@ -1,4 +1,5 @@
-﻿using DcsExportLib.Extensions;
+﻿using DcsExportLib.Enums;
+using DcsExportLib.Extensions;
 using DcsExportLib.Models;
 
 namespace DcsExportLib
@@ -6,6 +7,7 @@ namespace DcsExportLib
     internal class ModuleLookup : IModuleLookup
     {
         private const string DisplayNameProperty = "displayName";
+        private const string ShortNameProperty = "shortName";
         private const string InfoProperty = "info";
 
         public ICollection<DcsModuleInfo> GetInstalledModules(string dcsPath)
@@ -34,7 +36,7 @@ namespace DcsExportLib
             {
                 DcsModuleInfo? foundModule = GetModuleInfoFromEntry(moduleDirectoryInfo);
 
-                if(foundModule != null)
+                if(foundModule != null && NotSupportedModules.List.All(i => i != foundModule.ModuleDirectoryName))
                     allModulesList.Add(foundModule);
             }
 
@@ -85,14 +87,17 @@ namespace DcsExportLib
             if (string.IsNullOrEmpty(entryFileContent))
                 return false;
 
-            string displayName = GetLuaPropertyValue(entryFileContent, DisplayNameProperty);
+            string name = GetLuaPropertyValue(entryFileContent, DisplayNameProperty);
 
-            if (string.IsNullOrEmpty(displayName))
+            if (string.IsNullOrWhiteSpace(name))
+                name = GetLuaPropertyValue(entryFileContent, ShortNameProperty);
+
+            if (string.IsNullOrEmpty(name))
                 return false;
 
             string info = GetLuaPropertyValue(entryFileContent, InfoProperty);
 
-            dcsModuleInfo = new DcsModuleInfo { ModulePath = entryFileInfo.DirectoryName, Info = info, Name = displayName};
+            dcsModuleInfo = new DcsModuleInfo { ModulePath = entryFileInfo.DirectoryName, Info = info, Name = name};
             return true;
         }
 
