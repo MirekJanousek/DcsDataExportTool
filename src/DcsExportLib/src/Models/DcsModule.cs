@@ -1,15 +1,12 @@
 ﻿namespace DcsExportLib.Models
 {
-    public class DcsModuleInfo
+    /// <summary>
+    /// The DCS module
+    /// </summary>
+    public class DcsModule
     {
-        public DcsModuleInfo(string name, string info)
-        {
-            Name = name;
-            Info = info;
-        }
+        public DcsModuleInfo Info { get; set; } = new DcsModuleInfo();
 
-        public string Name { get; }
-
-        public string Info { get; }
+        private ICollection<ClickableElement> Elements { get; set; } = new List<ClickableElement>();
     }
 }

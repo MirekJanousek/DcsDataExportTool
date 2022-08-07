@@ -92,7 +92,7 @@ namespace DcsExportLib
 
             string info = GetLuaPropertyValue(entryFileContent, InfoProperty);
 
-            dcsModuleInfo = new DcsModuleInfo(displayName, info);
+            dcsModuleInfo = new DcsModuleInfo { ModulePath = entryFileInfo.DirectoryName, Info = info, Name = displayName};
             return true;
         }
 

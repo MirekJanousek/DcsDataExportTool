@@ -1,7 +1,4 @@
--- 
--- NOTE: MOCK FILE
--- This file only included to mock out i_18n requirements in DCS modules
---
+-- This file mocks i18 functions that are required by DCS modules
 
 local i_18n = { locales = {} }
 
