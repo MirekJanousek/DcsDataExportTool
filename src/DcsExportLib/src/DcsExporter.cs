@@ -30,13 +30,11 @@ namespace DcsExportLib
             ValidationConfiguration();
 
             // TODO MJ: validation of the selected module in case someone fills it manually when used as library
-            IClickableDataLoader clickableDataExporter = _loaderFactory.GetClickableDataLoader(moduleInfo);
 
+            IClickableDataLoader clickableDataExporter = _loaderFactory.GetClickableDataLoader(moduleInfo);
             var exportedModule = clickableDataExporter.GetData(moduleInfo);
 
-
             //IList<ClickableElement> clickElements = elements.ToObject<IList<ClickableElement>>();
-
 
             //StringBuilder sb = new StringBuilder();
 
