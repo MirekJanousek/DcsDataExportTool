@@ -5,6 +5,9 @@ namespace DCSExporterApp
 {
     internal class ConsoleAppManager
     {
+        // TODO: remove when not needed
+        private readonly string[] _notWorkingModules = { "M-2000C", "Ka-50 Black Shark", "F-14", "MiG-21bis", "Mirage F1", "NS430", "TF-51D Mustang" };
+
         public DcsModuleInfo PromptSelectModule(ICollection<DcsModuleInfo> modules)
         {
             Console.WriteLine("Choose one of the modules below:");
@@ -39,7 +42,12 @@ namespace DCSExporterApp
 
             foreach (var dcsModuleInfo in modules)
             {
-                Console.WriteLine($"{counter}\t- {dcsModuleInfo.Name}");
+                string lineStr = $"{counter}\t- {dcsModuleInfo.Name}";
+
+                if (_notWorkingModules.Contains(dcsModuleInfo.Name))
+                    lineStr += " (not working)";
+
+                Console.WriteLine(lineStr);
                 counter++;
             }
         }

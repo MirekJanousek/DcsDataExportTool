@@ -184,6 +184,9 @@ namespace DcsExportLib.Exporters
                             actionId = Convert.ToInt32((long)actionTable[classIx]);
                     }
 
+                    // TODO MJ: Some LEV controls have step value in "gain" not in arg_value
+                    // ?? Check if the arg_value is 0 and use gain instead ?? Only for LEV controls ?? Try for others to see
+
                     IElementStepAction stepAction = GetElementStepAction(classIx, elementEntryTable["arg_value"] as LuaTable, (LuaTable)elementEntryTable["arg_lim"]);
 
                     // get the steps
@@ -206,7 +209,22 @@ namespace DcsExportLib.Exporters
             decimal value = Decimal.Parse(argValuesTable[classIndex].ToString());
 
             returnStepAction = new ElementStepAction { StepValue = value };
-            GetElementStepLimits((LuaTable)argLimitTable[classIndex], returnStepAction);
+
+            if (argLimitTable[classIndex] is LuaTable table)
+            {
+                GetElementStepLimits(table, returnStepAction);
+            }
+            else
+            {
+                // this is hit by strange definitions like Harrier Nozzle Control Lever PTN_487
+                FillElementStepLimit(1, "0", returnStepAction);
+                FillElementStepLimit(2, argLimitTable[1].ToString(), returnStepAction);
+
+#if DEBUG
+                throw new InvalidOperationException(
+                    "Unexpected limit case, that needs workaround and keep an eye on. This case works for AV8B. This exception is there to give notice in advance.");
+#endif
+            }
 
             return returnStepAction;
         }
@@ -219,17 +237,21 @@ namespace DcsExportLib.Exporters
             {
                 // TODO MJ: type agnostic conversion
                 // TODO MJ: round doubles to 15 decimal places
+                FillElementStepLimit(limitIx, argLimitTable[limitIx].ToString(), stepDetail);
+            }
+        }
 
-                decimal value = Decimal.Parse(argLimitTable[limitIx].ToString());
+        private static void FillElementStepLimit(int limit, string limitStrValue, IElementStepAction stepDetail)
+        {
+            decimal value = Decimal.Parse(limitStrValue);
 
-                if (limitIx == 1)
-                {
-                    stepDetail.MinLimit = value;
-                }
-                else
-                {
-                    stepDetail.MaxLimit = value;
-                }
+            if (limit == 1)
+            {
+                stepDetail.MinLimit = value;
+            }
+            else
+            {
+                stepDetail.MaxLimit = value;
             }
         }
     }
