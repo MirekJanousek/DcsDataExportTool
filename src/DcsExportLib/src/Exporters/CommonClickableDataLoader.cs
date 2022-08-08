@@ -4,6 +4,7 @@ using DcsExportLib.Models;
 using NLua;
 
 using System.Text;
+using DcsExportLib.Enums;
 using KeraLua;
 using Lua = NLua.Lua;
 using LuaFunction = KeraLua.LuaFunction;
@@ -26,18 +27,10 @@ namespace DcsExportLib.Exporters
                 // TODO: pass the info differently
                 string clickableDataPath = $@"{moduleInfo.ModulePath}\Cockpit\Scripts\clickabledata.lua";
                 string clickableDefsPath = $@"{moduleInfo.ModulePath}\Cockpit\Scripts\clickable_defs.lua";
-
-
-                lua.State.DoFile(clickableDefsPath);
-
-                string I18FilePath = AppContext.BaseDirectory + @"Scripts\i_18n.lua";
-                string exportFunctionsPath = AppContext.BaseDirectory + @"Scripts\ExportFunctions.lua";
                 
-                //lua.DoString(@"package.cpath = 'Scripts/?.lua' .. package.cpath");
-               // lua.LoadFile(I18FilePath);
-
-               lua.DoString("package.path = package.path .. ';Scripts/?.lua'");
-                lua.DoFile(exportFunctionsPath);
+                lua.State.DoFile(clickableDefsPath);
+                lua.DoString("package.path = package.path .. ';Scripts/?.lua'");
+                lua.DoFile(ProgramPaths.ExportFunctionsFilePath);
 
                 // dictionary of plane devices
                 IDictionary<long, string> devices = GetDeviceNames(moduleInfo.ModulePath);
