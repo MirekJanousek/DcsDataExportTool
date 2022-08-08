@@ -1,4 +1,4 @@
-﻿-- Define global class type for clickabledata.
+﻿-- Class types of the clickable data elements
 class_type = 
 {
 	NULL   = 0,
@@ -8,7 +8,6 @@ class_type =
 	LEV    = 4
 }
 
--- Mock out the get_option_value and get_aircraft_type functions that don't exist in this environment.
 function get_option_value(x)
 	return nil
 end

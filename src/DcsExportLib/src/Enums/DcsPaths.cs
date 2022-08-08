@@ -1,4 +1,4 @@
-﻿namespace DcsExportLib
+﻿namespace DcsExportLib.Enums
 {
     internal class DcsPaths
     {

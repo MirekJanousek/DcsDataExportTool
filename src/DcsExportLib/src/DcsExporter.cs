@@ -12,7 +12,14 @@ namespace DcsExportLib
         // TODO MJ: implement ILogger
         //private readonly ILogger logger_;
 
-        public ExporterConfig Config { get; set; } = new();
+        private readonly ILoaderFactory _loaderFactory;
+
+        public DcsExporter(ILoaderFactory loaderFactory)
+        {
+            _loaderFactory = loaderFactory ?? throw new ArgumentNullException(nameof(loaderFactory));
+        }
+
+        public ExportSettings Settings { get; set; } = new();
 
         public void ExportClickableData(DcsModuleInfo moduleInfo)
         {
@@ -23,14 +30,11 @@ namespace DcsExportLib
             ValidationConfiguration();
 
             // TODO MJ: validation of the selected module in case someone fills it manually when used as library
-            ExporterFactory exporterFactory = new ExporterFactory();
-            IClickableDataExporter clickableDataExporter = exporterFactory.GetClickableDataExporter(moduleInfo);
 
-            clickableDataExporter.ExportData(moduleInfo);
-
+            IClickableDataLoader clickableDataExporter = _loaderFactory.GetClickableDataLoader(moduleInfo);
+            var exportedModule = clickableDataExporter.GetData(moduleInfo);
 
             //IList<ClickableElement> clickElements = elements.ToObject<IList<ClickableElement>>();
-
 
             //StringBuilder sb = new StringBuilder();
 
@@ -54,7 +58,7 @@ namespace DcsExportLib
 
         private void ValidationConfiguration()
         {
-            if (string.IsNullOrWhiteSpace(Config.DcsPath))
+            if (string.IsNullOrWhiteSpace(Settings.DcsFolderPath))
                 throw new ArgumentException("DCS installation path is missing!");
         }
     }
