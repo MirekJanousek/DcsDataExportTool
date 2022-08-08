@@ -21,19 +21,17 @@ namespace DcsExportLib.Exporters
             {
                 lua.State.Encoding = Encoding.UTF8;
 
-                LockOnOptions options = new LockOnOptions(moduleInfo.ModulePath);
+                LockOnOptions options = new LockOnOptions(moduleInfo.ModuleBaseFolderPath);
                 lua["LockOn_Options"] = options;
 
                 // TODO: pass the info differently
-                string clickableDataPath = $@"{moduleInfo.ModulePath}\Cockpit\Scripts\clickabledata.lua";
-                string clickableDefsPath = $@"{moduleInfo.ModulePath}\Cockpit\Scripts\clickable_defs.lua";
-                
-                lua.State.DoFile(clickableDefsPath);
+                string clickableDataPath = $@"{moduleInfo.ModuleBaseFolderPath}\Cockpit\Scripts\clickabledata.lua";
+
                 lua.DoString("package.path = package.path .. ';Scripts/?.lua'");
                 lua.DoFile(ProgramPaths.ExportFunctionsFilePath);
 
                 // dictionary of plane devices
-                IDictionary<long, string> devices = GetDeviceNames(moduleInfo.ModulePath);
+                IDictionary<long, string> devices = GetDeviceNames(moduleInfo.ModuleBaseFolderPath);
 
                 lua.DoFile(clickableDataPath);
                 var res = lua["elements"];
@@ -64,7 +62,10 @@ namespace DcsExportLib.Exporters
 
             return null;
         }
-        
+
+        public ICollection<string> InitScriptPaths { get; init; }
+        public string ClickableDataScriptPath { get; init; }
+
         private static void PrintElements(List<ClickableElement> clickElementsCollection)
         {
             var debugCol = clickElementsCollection.Where(c => c.ElementParts.Any(e => e.DcsId == 0)).ToList();

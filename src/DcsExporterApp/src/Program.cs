@@ -1,9 +1,6 @@
-﻿using System.Diagnostics;
-using DCSExporterApp;
-using DCSExporterApp.Factories;
+﻿using DCSExporterApp.Factories;
 
 using DcsExportLib;
-using DcsExportLib.Factories;
 using DcsExportLib.Models;
 
 using Microsoft.Extensions.Configuration;

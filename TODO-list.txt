@@ -1,0 +1,6 @@
+Class for searching for clickabledata.lua
+
+Module lookup
+---------------------------
+Search for directories with entry.lua
+	Check if there is clickabledata.lua somewhere in the sub-directories
