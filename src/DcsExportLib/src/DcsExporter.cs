@@ -4,14 +4,8 @@ using DcsExportLib.Models;
 
 namespace DcsExportLib
 {
-    /// TODO MJ:
-    /// Get script paths by module (enum?, config file with paths?)
-
     internal class DcsExporter : IDcsExporter
     {
-        // TODO MJ: implement ILogger
-        //private readonly ILogger logger_;
-
         private readonly ILoaderFactory _loaderFactory;
 
         public DcsExporter(ILoaderFactory loaderFactory)

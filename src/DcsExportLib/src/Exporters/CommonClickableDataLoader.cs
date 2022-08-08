@@ -21,17 +21,17 @@ namespace DcsExportLib.Exporters
             {
                 lua.State.Encoding = Encoding.UTF8;
 
-                LockOnOptions options = new LockOnOptions(moduleInfo.ModuleBaseFolderPath);
+                LockOnOptions options = new LockOnOptions(moduleInfo.ScriptFolder);
                 lua["LockOn_Options"] = options;
 
                 // TODO: pass the info differently
-                string clickableDataPath = $@"{moduleInfo.ModuleBaseFolderPath}\Cockpit\Scripts\clickabledata.lua";
+                string clickableDataPath = moduleInfo.ClickableElementsFolderPath;
 
                 lua.DoString("package.path = package.path .. ';Scripts/?.lua'");
                 lua.DoFile(ProgramPaths.ExportFunctionsFilePath);
 
                 // dictionary of plane devices
-                IDictionary<long, string> devices = GetDeviceNames(moduleInfo.ModuleBaseFolderPath);
+                IDictionary<long, string> devices = GetDeviceNames(moduleInfo);
 
                 lua.DoFile(clickableDataPath);
                 var res = lua["elements"];
@@ -89,12 +89,12 @@ namespace DcsExportLib.Exporters
             Console.WriteLine($"{element.Device.DeviceName}({element.Device.DeviceId})\t{part.ActionId}\t{element.Name}\t{part.Type}\t{dcsIdStr}\t{stepDetail.StepValue}\t{stepDetail.MinLimit}\t{stepDetail.MaxLimit}\t{element.Hint}");
         }
 
-        private static IDictionary<long, string> GetDeviceNames(string modulePath)
+        private static IDictionary<long, string> GetDeviceNames(DcsModuleInfo moduleInfo)
         {
             SortedDictionary<long, string> returnDictionary = new SortedDictionary<long, string>();
 
             // TODO: pass info differently
-            string devicesPath = $@"{modulePath}\Cockpit\Scripts\devices.lua";
+            string devicesPath = Path.Combine(moduleInfo.ScriptFolder, DcsPaths.DevicesScriptName);
 
             using (Lua lua = new Lua())
             {

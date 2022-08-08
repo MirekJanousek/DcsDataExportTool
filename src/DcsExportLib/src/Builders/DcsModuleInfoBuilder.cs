@@ -1,12 +1,11 @@
-﻿using DcsExportLib.Extensions;
+﻿using DcsExportLib.Enums;
+using DcsExportLib.Extensions;
 using DcsExportLib.Models;
 
 namespace DcsExportLib.Builders
 {
     internal class DcsModuleInfoBuilder : IDcsModuleInfoBuilder
     {
-        private const string EntryFileName = "entry.lua";
-        private const string ClickableDataScriptName = "clickabledata.lua";
         private const string DisplayNameProperty = "displayName";
         private const string ShortNameProperty = "shortName";
         private const string InfoProperty = "info";
@@ -17,7 +16,7 @@ namespace DcsExportLib.Builders
                 return null;
 
             // must contain entry.lua
-            FileInfo[] entryFileInfos = new DirectoryInfo(moduleBaseDirPath).GetFiles(EntryFileName);
+            FileInfo[] entryFileInfos = new DirectoryInfo(moduleBaseDirPath).GetFiles(DcsPaths.EntryFileName);
 
             if (entryFileInfos.Length != 1)
                 return null;
@@ -109,7 +108,7 @@ namespace DcsExportLib.Builders
         private string GetClickableElementsScriptPath(string moduleBaseDirPath)
         {
             // search for clickable data script file
-            FileInfo[] entryFileInfos = new DirectoryInfo(moduleBaseDirPath).GetFiles(ClickableDataScriptName, SearchOption.AllDirectories);
+            FileInfo[] entryFileInfos = new DirectoryInfo(moduleBaseDirPath).GetFiles(DcsPaths.ClickableDataScriptName, SearchOption.AllDirectories);
 
             if(entryFileInfos.Length == 0 || entryFileInfos.Length > 1)
                 return String.Empty;

@@ -4,9 +4,9 @@
     {
         public string script_path;
 
-        public LockOnOptions(string modulePath)
+        public LockOnOptions(string moduleScriptPath)
         {
-            script_path = @$"{modulePath}\Cockpit\Scripts\";
+            script_path = moduleScriptPath + @"\";
         }
     }
 }

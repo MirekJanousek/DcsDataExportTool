@@ -23,5 +23,19 @@
                 return string.Empty;
             }
         }
+
+        public string ScriptFolder
+        {
+            get
+            {
+                if (!string.IsNullOrWhiteSpace(ClickableElementsFolderPath))
+                {
+                    FileInfo clickableDataScriptFileInfo = new FileInfo(ClickableElementsFolderPath);
+                    return clickableDataScriptFileInfo.DirectoryName ?? string.Empty;
+                }
+
+                return string.Empty;
+            }
+        }
     }
 }
