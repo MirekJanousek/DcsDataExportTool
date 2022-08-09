@@ -1,6 +1,7 @@
 ﻿using DCSExporterApp.Factories;
 using DCSExporterApp.FileExports;
 using DcsExportLib;
+using DcsExportLib.Factories;
 using DcsExportLib.Models;
 
 using Microsoft.Extensions.Configuration;
@@ -158,7 +159,6 @@ namespace DCSExporterApp
 
                 if (e.ExceptionObject is Exception)
                 {
-
                     Console.WriteLine($"Message: {((Exception)e.ExceptionObject).Message}");
                     Console.WriteLine($"Stack: {((Exception)e.ExceptionObject).StackTrace}");
                 }

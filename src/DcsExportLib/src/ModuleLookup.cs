@@ -39,10 +39,8 @@ namespace DcsExportLib
                     continue;
 
                 allModulesList.Add(foundModule);
-            }
-
+            }            
             return allModulesList.OrderBy(i => i.Name).ToList();
         }
-
     }
 }
