@@ -6,7 +6,16 @@ namespace DCSExporterApp
     internal class ConsoleAppManager
     {
         // TODO: remove when not needed
-        private readonly string[] _notWorkingModules = { "M-2000C", "Ka-50 Black Shark", "F-14", "MiG-21bis", "Mirage F1", "NS430", "TF-51D Mustang" };
+        private readonly string[] _notWorkingModules =
+        {
+            "M-2000C", 
+            "F-14", 
+            "MiG-21bis", 
+            "Mirage F1", 
+            "NS430", 
+            "TF-51D Mustang" 
+
+        };
 
         public DcsModuleInfo PromptSelectModule(ICollection<DcsModuleInfo> modules)
         {
@@ -66,6 +75,53 @@ namespace DCSExporterApp
 
                 Console.WriteLine("Incorrect entry");
             }
+        }
+
+        public void ShowNoExportedModuleMessage()
+        {
+            Console.WriteLine("Sorry! Module was not exported.");
+        }
+
+        public void NotifyException(string message, Exception? exception = null)
+        {
+            Console.Clear();
+            Console.WriteLine($"Error encountered: {message}");
+
+            if(exception != null)
+                Console.WriteLine($"Exception message: {exception.Message}");
+        }
+
+        public void NotifyWrongSettings(ICollection<string> settingsErrors)
+        {
+            Console.Clear();
+            Console.WriteLine("Some application settings are missing or incorrect.");
+
+            if(settingsErrors.Count > 0)
+                Console.WriteLine();
+
+            foreach (var error in settingsErrors)
+            {
+                Console.WriteLine($"\t- {error}");   
+            }
+
+            if (settingsErrors.Count > 0)
+                Console.WriteLine();
+
+            Console.WriteLine("Check the appsettings.json file.");
+        }
+
+        public void PromptExitConfirmation(bool clearConsole = false)
+        {
+            if(clearConsole)
+                Console.Clear();
+
+            Console.WriteLine("Press enter to exit the application");
+            Console.ReadLine();
+        }
+
+        public void NotifyExportDone()
+        {
+            Console.WriteLine("Export was successful!");
         }
     }
 }

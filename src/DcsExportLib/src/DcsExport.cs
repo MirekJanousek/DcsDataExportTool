@@ -1,6 +1,7 @@
 ﻿using DcsExportLib.Builders;
 using DcsExportLib.Exporters;
 using DcsExportLib.Factories;
+using DcsExportLib.Loaders;
 using DcsExportLib.Validation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -48,8 +49,8 @@ namespace DcsExportLib
             services.AddTransient<IClickableDataLoader, CommonClickableDataLoader>();
             services.AddTransient<ILoaderFactory, LoaderFactory>();
             services.AddTransient<IDcsModuleInfoBuilder, DcsModuleInfoBuilder>();
-            
-            
+            services.AddTransient<IDevicesLoader, DevicesLoader>();
+
             _serviceProvider = services.BuildServiceProvider();
         }
     }

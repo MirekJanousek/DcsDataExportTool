@@ -1,13 +1,14 @@
-﻿using DcsExportLib.DcsObjects;
+﻿using System.Reflection.Metadata.Ecma335;
+using DcsExportLib.DcsObjects;
+using DcsExportLib.Enums;
+using DcsExportLib.Loaders;
 using DcsExportLib.Models;
 
 using NLua;
 
 using System.Text;
-using DcsExportLib.Enums;
 using KeraLua;
 using Lua = NLua.Lua;
-using LuaFunction = KeraLua.LuaFunction;
 
 namespace DcsExportLib.Exporters
 {
@@ -15,7 +16,14 @@ namespace DcsExportLib.Exporters
     {
         private readonly Encoding _encoding = Encoding.UTF8;
 
-        public DcsModule GetData(DcsModuleInfo moduleInfo)
+        private readonly IDevicesLoader _devicesLoader;
+
+        public CommonClickableDataLoader(IDevicesLoader deviceLoader)
+        {
+            _devicesLoader = deviceLoader ?? throw new ArgumentNullException(nameof(deviceLoader));
+        }
+
+        public DcsModule? GetData(DcsModuleInfo moduleInfo)
         {
             using (Lua lua = new Lua())
             {
@@ -23,22 +31,40 @@ namespace DcsExportLib.Exporters
 
                 LockOnOptions options = new LockOnOptions(moduleInfo.ScriptFolder);
                 lua["LockOn_Options"] = options;
-
-                // TODO: pass the info differently
-                string clickableDataPath = moduleInfo.ClickableElementsFolderPath;
-
+                
                 lua.DoString("package.path = package.path .. ';Scripts/?.lua'");
+
                 lua.DoFile(ProgramPaths.ExportFunctionsFilePath);
 
-                // dictionary of plane devices
-                IDictionary<long, string> devices = GetDeviceNames(moduleInfo);
+                // TODO: run script base don module
+                // Ka-50 clickabledata.lua and hint localizer dont run due to the invalid escape characters \%
+                // 
 
-                lua.DoFile(clickableDataPath);
-                var res = lua["elements"];
+                string localizeFunctionStr = 
+                    @"function LOCALIZE(str)
+                        return str
+                    end";
+
+                string content = File.ReadAllText(moduleInfo.ClickableElementsFolderPath).Replace(@"\%", "%", StringComparison.InvariantCulture);
+                content = content.Replace("dofile(LockOn_Options.script_path..\"Hint_localizer.lua\")", string.Empty);
+                content = localizeFunctionStr + "\r\n\r\n" + content;
+                lua.DoString(content);
+
+                
+                //var loadRes = lua.LoadFile(moduleInfo.ClickableElementsFolderPath);
+                //loadRes.Call();
+
+                var elementsResult = lua["elements"];
+                
+                // dictionary of plane devices
+                IDictionary<long, string> devices = new Dictionary<long, string>();
+
+                if(lua["devices"] is LuaTable devicesResult)
+                    devices = _devicesLoader.GetDevices(devicesResult);
 
                 List<ClickableElement> clickElementsCollection = new List<ClickableElement>();
 
-                if (res is NLua.LuaTable resTable)
+                if (elementsResult is NLua.LuaTable resTable)
                 {
                     foreach (KeyValuePair<object, object> elementEntry in resTable)
                     {
@@ -57,15 +83,12 @@ namespace DcsExportLib.Exporters
 
                 }
 
-                PrintElements(clickElementsCollection);
+               // PrintElements(clickElementsCollection);
+
+                return new DcsModule() { Elements = clickElementsCollection, Info = moduleInfo };
             }
-
-            return null;
         }
-
-        public ICollection<string> InitScriptPaths { get; init; }
-        public string ClickableDataScriptPath { get; init; }
-
+        
         private static void PrintElements(List<ClickableElement> clickElementsCollection)
         {
             var debugCol = clickElementsCollection.Where(c => c.ElementParts.Any(e => e.DcsId == 0)).ToList();
@@ -84,50 +107,11 @@ namespace DcsExportLib.Exporters
         private static void PrintElementByByActions(ClickableElement element, ClickableElementPart part, IElementStepAction stepDetail)
         {
             // DCS ID 0 is valid value
-            string dcsIdStr = part.DcsId > -1 ? part.DcsId.ToString() : "NONE";
+            string dcsIdStr = part.DcsId > -1 ? part.DcsId.ToString() : "";
 
             Console.WriteLine($"{element.Device.DeviceName}({element.Device.DeviceId})\t{part.ActionId}\t{element.Name}\t{part.Type}\t{dcsIdStr}\t{stepDetail.StepValue}\t{stepDetail.MinLimit}\t{stepDetail.MaxLimit}\t{element.Hint}");
         }
-
-        private static IDictionary<long, string> GetDeviceNames(DcsModuleInfo moduleInfo)
-        {
-            SortedDictionary<long, string> returnDictionary = new SortedDictionary<long, string>();
-
-            // TODO: pass info differently
-            string devicesPath = Path.Combine(moduleInfo.ScriptFolder, DcsPaths.DevicesScriptName);
-
-            using (Lua lua = new Lua())
-            {
-                lua.State.Encoding = Encoding.UTF8;
-                lua.DoFile(devicesPath);
-                var devices = lua["devices"];
-
-                if (devices is NLua.LuaTable devicesTable)
-                {
-                    foreach (KeyValuePair<object, object> deviceRecord in devicesTable)
-                    {
-                        long deviceId = -1;
-
-                        // index parsing
-                        if (deviceRecord.Value is long deviceIdLong)
-                        {
-                            deviceId = deviceIdLong;
-                        }
-
-                        if (deviceRecord.Key is string deviceName && deviceId > -1)
-                        {
-                            returnDictionary.Add(deviceId, deviceName);
-                        }
-                    }
-                }
-            }
-
-            // add NO DEVICE record
-            returnDictionary.Add(0, "");
-
-            return returnDictionary;
-        }
-
+        
         private static ClickableElement ExportElementEntry(string elementName, LuaTable elementEntryTable,
             IDictionary<long, string> devices)
         {
