@@ -1,10 +1,9 @@
-# DCS Export Tool
+# DCS Data Export Tool
 
-Console application for players of Digital Combat Simulator to export clikcable cockpit data with IDs into table per module.
-Enables users to input proper control and device IDs to other tools, like StreamDeck with **StreamDeck DCS Interface**
+## What is it good for?
+Export tool to get DCS modules clickable data from installed files (installed modules)
 
-## What it does
-- Scans installed modules and lists them in the console
-- (TBD) Reads clickable cockpit data from the LUA scripts of the modules with common folder structure (most of the module, unlike Mirage F-1)
-- (TBD) Exports the data into CSV
-- (TBD) Exports the data into table on HTML page
+## What can I use it with?
+Exported data are suitable for use with:
+
+- **[DCS Interface for Stream Deck](https://github.com/enertial/streamdeck-dcs-interface)** by **[Charles Tytler](https://github.com/charlestytler)** 
