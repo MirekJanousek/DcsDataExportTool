@@ -7,5 +7,5 @@ namespace DcsExportLib.Exporters;
 /// </summary>
 internal interface IClickableDataLoader
 {
-    DcsModule GetData(DcsModuleInfo moduleInfo);
+    DcsModule? GetData(DcsModuleInfo moduleInfo);
 }

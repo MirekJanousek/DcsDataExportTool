@@ -1,4 +1,7 @@
-﻿using DcsExportLib.DcsObjects;
+﻿using System.Reflection.Metadata.Ecma335;
+using DcsExportLib.DcsObjects;
+using DcsExportLib.Enums;
+using DcsExportLib.Loaders;
 using DcsExportLib.Models;
 
 using NLua;
@@ -6,7 +9,6 @@ using NLua;
 using System.Text;
 using KeraLua;
 using Lua = NLua.Lua;
-using LuaFunction = KeraLua.LuaFunction;
 
 namespace DcsExportLib.Exporters
 {
@@ -14,40 +16,55 @@ namespace DcsExportLib.Exporters
     {
         private readonly Encoding _encoding = Encoding.UTF8;
 
-        public DcsModule GetData(DcsModuleInfo moduleInfo)
+        private readonly IDevicesLoader _devicesLoader;
+
+        public CommonClickableDataLoader(IDevicesLoader deviceLoader)
+        {
+            _devicesLoader = deviceLoader ?? throw new ArgumentNullException(nameof(deviceLoader));
+        }
+
+        public DcsModule? GetData(DcsModuleInfo moduleInfo)
         {
             using (Lua lua = new Lua())
             {
                 lua.State.Encoding = Encoding.UTF8;
 
-                LockOnOptions options = new LockOnOptions(moduleInfo.ModulePath);
+                LockOnOptions options = new LockOnOptions(moduleInfo.ScriptFolder);
                 lua["LockOn_Options"] = options;
-
-                // TODO: pass the info differently
-                string clickableDataPath = $@"{moduleInfo.ModulePath}\Cockpit\Scripts\clickabledata.lua";
-                string clickableDefsPath = $@"{moduleInfo.ModulePath}\Cockpit\Scripts\clickable_defs.lua";
-
-
-                lua.State.DoFile(clickableDefsPath);
-
-                string I18FilePath = AppContext.BaseDirectory + @"Scripts\i_18n.lua";
-                string exportFunctionsPath = AppContext.BaseDirectory + @"Scripts\ExportFunctions.lua";
                 
-                //lua.DoString(@"package.cpath = 'Scripts/?.lua' .. package.cpath");
-               // lua.LoadFile(I18FilePath);
+                lua.DoString("package.path = package.path .. ';Scripts/?.lua'");
 
-               lua.DoString("package.path = package.path .. ';Scripts/?.lua'");
-                lua.DoFile(exportFunctionsPath);
+                lua.DoFile(ProgramPaths.ExportFunctionsFilePath);
 
+                // TODO: run script base don module
+                // Ka-50 clickabledata.lua and hint localizer dont run due to the invalid escape characters \%
+                // 
+
+                string localizeFunctionStr = 
+                    @"function LOCALIZE(str)
+                        return str
+                    end";
+
+                string content = File.ReadAllText(moduleInfo.ClickableElementsFolderPath).Replace(@"\%", "%", StringComparison.InvariantCulture);
+                content = content.Replace("dofile(LockOn_Options.script_path..\"Hint_localizer.lua\")", string.Empty);
+                content = localizeFunctionStr + "\r\n\r\n" + content;
+                lua.DoString(content);
+
+                
+                //var loadRes = lua.LoadFile(moduleInfo.ClickableElementsFolderPath);
+                //loadRes.Call();
+
+                var elementsResult = lua["elements"];
+                
                 // dictionary of plane devices
-                IDictionary<long, string> devices = GetDeviceNames(moduleInfo.ModulePath);
+                IDictionary<long, string> devices = new Dictionary<long, string>();
 
-                lua.DoFile(clickableDataPath);
-                var res = lua["elements"];
+                if(lua["devices"] is LuaTable devicesResult)
+                    devices = _devicesLoader.GetDevices(devicesResult);
 
                 List<ClickableElement> clickElementsCollection = new List<ClickableElement>();
 
-                if (res is NLua.LuaTable resTable)
+                if (elementsResult is NLua.LuaTable resTable)
                 {
                     foreach (KeyValuePair<object, object> elementEntry in resTable)
                     {
@@ -66,10 +83,10 @@ namespace DcsExportLib.Exporters
 
                 }
 
-                PrintElements(clickElementsCollection);
-            }
+               // PrintElements(clickElementsCollection);
 
-            return null;
+                return new DcsModule() { Elements = clickElementsCollection, Info = moduleInfo };
+            }
         }
         
         private static void PrintElements(List<ClickableElement> clickElementsCollection)
@@ -90,50 +107,11 @@ namespace DcsExportLib.Exporters
         private static void PrintElementByByActions(ClickableElement element, ClickableElementPart part, IElementStepAction stepDetail)
         {
             // DCS ID 0 is valid value
-            string dcsIdStr = part.DcsId > -1 ? part.DcsId.ToString() : "NONE";
+            string dcsIdStr = part.DcsId > -1 ? part.DcsId.ToString() : "";
 
             Console.WriteLine($"{element.Device.DeviceName}({element.Device.DeviceId})\t{part.ActionId}\t{element.Name}\t{part.Type}\t{dcsIdStr}\t{stepDetail.StepValue}\t{stepDetail.MinLimit}\t{stepDetail.MaxLimit}\t{element.Hint}");
         }
-
-        private static IDictionary<long, string> GetDeviceNames(string modulePath)
-        {
-            SortedDictionary<long, string> returnDictionary = new SortedDictionary<long, string>();
-
-            // TODO: pass info differently
-            string devicesPath = $@"{modulePath}\Cockpit\Scripts\devices.lua";
-
-            using (Lua lua = new Lua())
-            {
-                lua.State.Encoding = Encoding.UTF8;
-                lua.DoFile(devicesPath);
-                var devices = lua["devices"];
-
-                if (devices is NLua.LuaTable devicesTable)
-                {
-                    foreach (KeyValuePair<object, object> deviceRecord in devicesTable)
-                    {
-                        long deviceId = -1;
-
-                        // index parsing
-                        if (deviceRecord.Value is long deviceIdLong)
-                        {
-                            deviceId = deviceIdLong;
-                        }
-
-                        if (deviceRecord.Key is string deviceName && deviceId > -1)
-                        {
-                            returnDictionary.Add(deviceId, deviceName);
-                        }
-                    }
-                }
-            }
-
-            // add NO DEVICE record
-            returnDictionary.Add(0, "");
-
-            return returnDictionary;
-        }
-
+        
         private static ClickableElement ExportElementEntry(string elementName, LuaTable elementEntryTable,
             IDictionary<long, string> devices)
         {
@@ -190,6 +168,9 @@ namespace DcsExportLib.Exporters
                             actionId = Convert.ToInt32((long)actionTable[classIx]);
                     }
 
+                    // TODO MJ: Some LEV controls have step value in "gain" not in arg_value
+                    // ?? Check if the arg_value is 0 and use gain instead ?? Only for LEV controls ?? Try for others to see
+
                     IElementStepAction stepAction = GetElementStepAction(classIx, elementEntryTable["arg_value"] as LuaTable, (LuaTable)elementEntryTable["arg_lim"]);
 
                     // get the steps
@@ -212,7 +193,22 @@ namespace DcsExportLib.Exporters
             decimal value = Decimal.Parse(argValuesTable[classIndex].ToString());
 
             returnStepAction = new ElementStepAction { StepValue = value };
-            GetElementStepLimits((LuaTable)argLimitTable[classIndex], returnStepAction);
+
+            if (argLimitTable[classIndex] is LuaTable table)
+            {
+                GetElementStepLimits(table, returnStepAction);
+            }
+            else
+            {
+                // this is hit by strange definitions like Harrier Nozzle Control Lever PTN_487
+                FillElementStepLimit(1, "0", returnStepAction);
+                FillElementStepLimit(2, argLimitTable[1].ToString(), returnStepAction);
+
+#if DEBUG
+                throw new InvalidOperationException(
+                    "Unexpected limit case, that needs workaround and keep an eye on. This case works for AV8B. This exception is there to give notice in advance.");
+#endif
+            }
 
             return returnStepAction;
         }
@@ -225,17 +221,21 @@ namespace DcsExportLib.Exporters
             {
                 // TODO MJ: type agnostic conversion
                 // TODO MJ: round doubles to 15 decimal places
+                FillElementStepLimit(limitIx, argLimitTable[limitIx].ToString(), stepDetail);
+            }
+        }
 
-                decimal value = Decimal.Parse(argLimitTable[limitIx].ToString());
+        private static void FillElementStepLimit(int limit, string limitStrValue, IElementStepAction stepDetail)
+        {
+            decimal value = Decimal.Parse(limitStrValue);
 
-                if (limitIx == 1)
-                {
-                    stepDetail.MinLimit = value;
-                }
-                else
-                {
-                    stepDetail.MaxLimit = value;
-                }
+            if (limit == 1)
+            {
+                stepDetail.MinLimit = value;
+            }
+            else
+            {
+                stepDetail.MaxLimit = value;
             }
         }
     }

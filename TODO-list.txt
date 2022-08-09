@@ -1,0 +1,27 @@
+General
+-----------------------------------------------------------------------------------
+- change steps limits to nullable values instead of Min of number
+- change other models numeric values to nullables
+
+Module lookup
+-----------------------------------------------------------------------------------
+
+Export problems
+-----------------------------------------------------------------------------------
+- defined class types are not containing all of them
+	- some modules have other types too. Is the class types definition needed per module?
+
+- some long values are having leftovers at the end of the fractional part
+	- try rounding the value to 15 decimal places and shortening when trailing zeroes are not needed
+
+- some LEV elements have value for step in gain instead of arg_value
+	- maybe when arg_value = 0 than look for the step value in gain
+
+
+M-2000C:
+
+- some elements do not have limits => change code so that limits are not required
+
+AV8B:
+
+- Nozzle Control Lever should have step of 0.1, not 0 (arg_value vs. gain problem)

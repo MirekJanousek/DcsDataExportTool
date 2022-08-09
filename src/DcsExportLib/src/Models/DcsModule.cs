@@ -7,6 +7,6 @@
     {
         public DcsModuleInfo Info { get; set; } = new DcsModuleInfo();
 
-        private ICollection<ClickableElement> Elements { get; set; } = new List<ClickableElement>();
+        public ICollection<ClickableElement> Elements { get; set; } = new List<ClickableElement>();
     }
 }

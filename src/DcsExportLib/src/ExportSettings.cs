@@ -1,7 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Text.Json.Serialization;
-
-namespace DcsExportLib
+﻿namespace DcsExportLib
 {
     public class ExportSettings
     {

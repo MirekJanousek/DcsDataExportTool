@@ -4,14 +4,8 @@ using DcsExportLib.Models;
 
 namespace DcsExportLib
 {
-    /// TODO MJ:
-    /// Get script paths by module (enum?, config file with paths?)
-
     internal class DcsExporter : IDcsExporter
     {
-        // TODO MJ: implement ILogger
-        //private readonly ILogger logger_;
-
         private readonly ILoaderFactory _loaderFactory;
 
         public DcsExporter(ILoaderFactory loaderFactory)
@@ -21,7 +15,7 @@ namespace DcsExportLib
 
         public ExportSettings Settings { get; set; } = new();
 
-        public void ExportClickableData(DcsModuleInfo moduleInfo)
+        public DcsModule? Export(DcsModuleInfo moduleInfo)
         {
             if(moduleInfo == null)
                 throw new ArgumentNullException(nameof(moduleInfo));
@@ -34,26 +28,7 @@ namespace DcsExportLib
             IClickableDataLoader clickableDataExporter = _loaderFactory.GetClickableDataLoader(moduleInfo);
             var exportedModule = clickableDataExporter.GetData(moduleInfo);
 
-            //IList<ClickableElement> clickElements = elements.ToObject<IList<ClickableElement>>();
-
-            //StringBuilder sb = new StringBuilder();
-
-            //foreach(TablePair pair in elements.Pairs)
-            //{
-            //    Table properties = pair.Value.Table;
-            //    sb.Append(properties["element_id"]);
-            //    sb.Append(' ');
-            //    sb.Append(properties["device"]);
-            //    sb.Append(' ');
-            //    sb.Append(properties["action"]);
-            //    sb.Append(' ');
-            //    sb.Append(properties["hint"]);
-            //    //sb.Append(properties["class"]);
-
-            //    Console.WriteLine(sb.ToString());
-            //    sb.Clear();
-            //}
-
+            return exportedModule;
         }
 
         private void ValidationConfiguration()

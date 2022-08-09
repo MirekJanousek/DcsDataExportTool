@@ -13,5 +13,5 @@ public interface IDcsExporter
     /// Exports the clickable data of the given module
     /// </summary>
     /// <param name="moduleInfo">Exported module</param>
-    public void ExportClickableData(DcsModuleInfo moduleInfo);
+    public DcsModule? Export(DcsModuleInfo moduleInfo);
 }
