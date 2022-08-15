@@ -17,8 +17,9 @@ namespace DCSExporterApp.FileExports
             if(!dirInfo.Exists)
                 dirInfo.Create();
 
-            string fullPath = Path.Combine(directoryPath, $"{module.Info.Name}.{FileExtension}");
+            string fullPath = Path.Combine(directoryPath, $"{module.Info.ModuleDirectoryName}.{FileExtension}");
 
+            // TODO remove invalid characters from path
             using (var writer = new StreamWriter(fullPath))
             using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
             {
