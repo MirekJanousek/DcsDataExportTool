@@ -50,6 +50,7 @@ namespace DcsExportLib
             services.AddTransient<ILoaderFactory, LoaderFactory>();
             services.AddTransient<IDcsModuleInfoBuilder, DcsModuleInfoBuilder>();
             services.AddTransient<IDevicesLoader, DevicesLoader>();
+            services.AddTransient<IExecutorFactory, ExecutorFactory>();
             
             _serviceProvider = services.BuildServiceProvider();
         }

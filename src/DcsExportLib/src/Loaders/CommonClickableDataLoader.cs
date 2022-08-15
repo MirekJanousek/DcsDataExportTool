@@ -1,70 +1,42 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using DcsExportLib.DcsObjects;
-using DcsExportLib.Enums;
+﻿using DcsExportLib.Enums;
+using DcsExportLib.Extensions;
+using DcsExportLib.Factories;
 using DcsExportLib.Loaders;
 using DcsExportLib.Models;
 
 using NLua;
 
-using System.Text;
-using KeraLua;
 using Lua = NLua.Lua;
 
 namespace DcsExportLib.Exporters
 {
     internal class CommonClickableDataLoader : IClickableDataLoader
     {
-        private readonly Encoding _encoding = Encoding.UTF8;
-
         private readonly IDevicesLoader _devicesLoader;
+        private readonly IExecutorFactory _executorFactory;
 
-        public CommonClickableDataLoader(IDevicesLoader deviceLoader)
+        public CommonClickableDataLoader(IDevicesLoader deviceLoader, IExecutorFactory executorFactory)
         {
             _devicesLoader = deviceLoader ?? throw new ArgumentNullException(nameof(deviceLoader));
+            _executorFactory = executorFactory ?? throw new ArgumentNullException(nameof(executorFactory));
         }
 
         public DcsModule? GetData(DcsModuleInfo moduleInfo)
         {
             using (Lua lua = new Lua())
             {
-                lua.State.Encoding = Encoding.UTF8;
-
-                LockOnOptions options = new LockOnOptions(moduleInfo.ScriptFolder);
-                lua["LockOn_Options"] = options;
-                
-                lua.DoString("package.path = package.path .. ';Scripts/?.lua'");
-
-                lua.DoFile(ProgramPaths.ExportFunctionsFilePath);
-
-                // TODO: run script base don module
-                // Ka-50 clickabledata.lua and hint localizer dont run due to the invalid escape characters \%
-                // 
-
-                string localizeFunctionStr = 
-                    @"function LOCALIZE(str)
-                        return str
-                    end";
-
-                string content = File.ReadAllText(moduleInfo.ClickableElementsFolderPath).Replace(@"\%", "%", StringComparison.InvariantCulture);
-                content = content.Replace("dofile(LockOn_Options.script_path..\"Hint_localizer.lua\")", string.Empty);
-                content = localizeFunctionStr + "\r\n\r\n" + content;
-                lua.DoString(content);
-
-                
-                //var loadRes = lua.LoadFile(moduleInfo.ClickableElementsFolderPath);
-                //loadRes.Call();
-
-                var elementsResult = lua["elements"];
+                var executor = _executorFactory.GetExecutor(moduleInfo);
+                LuaTable elementsTable = executor.ExecuteClickables(lua, moduleInfo);
                 
                 // dictionary of plane devices
                 IDictionary<long, string> devices = new Dictionary<long, string>();
 
-                if(lua["devices"] is LuaTable devicesResult)
+                if(lua[DcsVariables.Devices] is LuaTable devicesResult)
                     devices = _devicesLoader.GetDevices(devicesResult);
 
                 List<ClickableElement> clickElementsCollection = new List<ClickableElement>();
 
-                if (elementsResult is NLua.LuaTable resTable)
+                if (elementsTable is LuaTable resTable)
                 {
                     foreach (KeyValuePair<object, object> elementEntry in resTable)
                     {
@@ -82,34 +54,9 @@ namespace DcsExportLib.Exporters
                     clickElementsCollection = clickElementsCollection.OrderBy(c => c.Device.DeviceName).ToList();
 
                 }
-
-               // PrintElements(clickElementsCollection);
-
-                return new DcsModule() { Elements = clickElementsCollection, Info = moduleInfo };
+                
+                return new DcsModule { Elements = clickElementsCollection, Info = moduleInfo };
             }
-        }
-        
-        private static void PrintElements(List<ClickableElement> clickElementsCollection)
-        {
-            var debugCol = clickElementsCollection.Where(c => c.ElementParts.Any(e => e.DcsId == 0)).ToList();
-            foreach (var clickableElement in clickElementsCollection)
-            {
-                foreach (var elementPart in clickableElement.ElementParts.OrderBy(p => p.ActionId))
-                {
-                    if (!(elementPart.ElementAction is NoElementStepAction))
-                    {
-                        PrintElementByByActions(clickableElement, elementPart, elementPart.ElementAction);
-                    }
-                }
-            }
-        }
-
-        private static void PrintElementByByActions(ClickableElement element, ClickableElementPart part, IElementStepAction stepDetail)
-        {
-            // DCS ID 0 is valid value
-            string dcsIdStr = part.DcsId > -1 ? part.DcsId.ToString() : "";
-
-            Console.WriteLine($"{element.Device.DeviceName}({element.Device.DeviceId})\t{part.ActionId}\t{element.Name}\t{part.Type}\t{dcsIdStr}\t{stepDetail.StepValue}\t{stepDetail.MinLimit}\t{stepDetail.MaxLimit}\t{element.Hint}");
         }
         
         private static ClickableElement ExportElementEntry(string elementName, LuaTable elementEntryTable,
@@ -191,6 +138,7 @@ namespace DcsExportLib.Exporters
 
             // get the argument values
             decimal value = Decimal.Parse(argValuesTable[classIndex].ToString());
+            value = value.Trail(15);
 
             returnStepAction = new ElementStepAction { StepValue = value };
 
@@ -216,7 +164,6 @@ namespace DcsExportLib.Exporters
         private static void GetElementStepLimits(LuaTable argLimitTable, IElementStepAction stepDetail)
         {
             // get the argument values limits
-
             for (int limitIx = 1; limitIx <= 2; limitIx++)
             {
                 // TODO MJ: type agnostic conversion
@@ -228,6 +175,7 @@ namespace DcsExportLib.Exporters
         private static void FillElementStepLimit(int limit, string limitStrValue, IElementStepAction stepDetail)
         {
             decimal value = Decimal.Parse(limitStrValue);
+            value = value.Trail(15);
 
             if (limit == 1)
             {
