@@ -18,9 +18,9 @@ namespace DCSExporterApp.FileExports
 
         public decimal StepValue { get; init; }
 
-        public decimal LimitMin { get; init; }
+        public decimal? LimitMin { get; init; }
 
-        public decimal LimitMax { get; init; }
+        public decimal? LimitMax { get; init; }
 
         public string Description { get; init; } = string.Empty;
     }

@@ -8,13 +8,13 @@ public interface IElementStepAction
         set;
     }
 
-    public decimal MinLimit
+    public decimal? MinLimit
     {
         get;
         set;
     }
 
-    public decimal MaxLimit
+    public decimal? MaxLimit
     {
         get;
         set;

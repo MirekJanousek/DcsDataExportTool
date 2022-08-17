@@ -15,15 +15,18 @@ namespace DCSExporterApp
             "NS430"
         };
 
-        public DcsModuleInfo PromptSelectModule(ICollection<DcsModuleInfo> modules)
+        public DcsModuleInfo PromptSelectModule(ICollection<DcsModuleInfo> modules, string searchedPath)
         {
             Console.WriteLine("Below is the list of your detected installed modules.");
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("(NOTE: List contains only modules with exportable data)");
+            Console.WriteLine($"* DCS path was set to: {searchedPath}");
+            Console.WriteLine("* List contains only modules with exportable data");
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine();
             
             ListInstalledModules(modules);
+
+            Console.WriteLine();
 
             int optionInt = PromptUserNumberEntry("Type the number of module you would like to export and press enter:", 1, modules.Count);
 

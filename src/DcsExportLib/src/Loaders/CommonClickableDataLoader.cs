@@ -49,7 +49,16 @@ namespace DcsExportLib.Exporters
                         }
                     }
 
-                    clickElementsCollection = clickElementsCollection.OrderBy(c => c.Device?.DeviceName).ToList();
+                    // order element parts from negative step values to positive
+                    clickElementsCollection.ForEach(c =>
+                    {
+                        c.ElementParts = c.ElementParts.OrderBy(ep => ep.ElementAction.StepValue).ToList();
+                    });
+
+                    // order elements by DeviceName and than by Hint
+                    clickElementsCollection = clickElementsCollection.OrderBy(c => c.Device?.DeviceName)
+                                                                     .ThenBy(c => c.Hint)
+                                                                     .ToList();
 
                 }
                 
@@ -145,6 +154,17 @@ namespace DcsExportLib.Exporters
 
             returnStepAction = new ElementStepAction { StepValue = value };
 
+            // some modules don't have limits for second element actions defined (F-14)
+            // so we will try to set class index to previous and go with its limits
+            if (classIndex == 2 && argLimitTable[classIndex] == null)
+            {
+                classIndex -= 1;
+
+#if DEBUG
+                throw new InvalidOperationException("BEWARE BREAKPOINT! Skip manually.");
+#endif
+            }
+
             if (argLimitTable[classIndex] is LuaTable table)
             {
                 GetElementStepLimits(table, returnStepAction);
@@ -152,6 +172,7 @@ namespace DcsExportLib.Exporters
             else
             {
                 // this is hit by strange definitions like Harrier Nozzle Control Lever PTN_487
+                // which has only one limit value instead of 2 for given action
                 FillElementStepLimit(1, "0", returnStepAction);
                 FillElementStepLimit(2, argLimitTable[1].ToString(), returnStepAction);
 

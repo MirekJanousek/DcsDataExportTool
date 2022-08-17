@@ -31,7 +31,7 @@ namespace DCSExporterApp
             
             ConsoleAppManager.SetConsoleTitle();
 
-            DcsModuleInfo selectedModule = ConsoleAppManager.PromptSelectModule(modules);
+            DcsModuleInfo selectedModule = ConsoleAppManager.PromptSelectModule(modules, exportSettings.DcsFolderPath);
 
             ConsoleAppManager.DisplayExportStartedMessage(selectedModule);
             
