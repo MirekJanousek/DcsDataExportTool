@@ -8,11 +8,10 @@ namespace DCSExporterApp
         // TODO: remove when not needed
         private readonly string[] _notWorkingModules =
         {
-            "M-2000C", 
-            "F-14", 
-            "MiG-21bis", 
-            "Mirage F1", 
-            "NS430"
+            //"M-2000C", 
+            //"MiG-21bis", 
+            //"Mirage F1", 
+           //"NS430"
         };
 
         public DcsModuleInfo PromptSelectModule(ICollection<DcsModuleInfo> modules, string searchedPath)

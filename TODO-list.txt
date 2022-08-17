@@ -14,15 +14,18 @@ Export problems
 - some LEV elements have value for step in gain instead of arg_value
 	- maybe when arg_value = 0 than look for the step value in gain
 
+- !!! some elements are build only from one part and some from more than 2 => cannot expect parts and limits to be of exact number 2
+
+- !!! do not fill Min or Max Limit if its not explicitely present (like Mig-21 LOAD 1 element)
+
 
 M-2000C:
 
 - some elements do not have limits => change code so that limits are not required
 
+- test
+	- VOR/ILS Test has properties stop_value (maybe another form of limits?) but no limits defined
+
 AV8B:
 
 - Nozzle Control Lever should have step of 0.1, not 0 (arg_value vs. gain problem)
-
-P-51
-
-- Does not have devices defined on elements (maybe only some?)
