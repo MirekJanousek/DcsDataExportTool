@@ -54,7 +54,7 @@ Below is the list of modules that are tested and working. Other modules might wo
 
 ## Used libraries and ideas
 - This software uses some basic ideas of **[DCS Interface for Stream Deck](https://github.com/enertial/streamdeck-dcs-interface)** by **[Charles Tytler](https://github.com/charlestytler)** 
--  **[NLUA Interface](https://https://github.com/NLua/NLua)** for work with LUA scripts is being used
+-  **[NLUA Interface](https://github.com/NLua/NLua)** for work with LUA scripts is being used
 
 ## Future development
 - Polishing of the code
