@@ -1,6 +1,5 @@
 ﻿using NLua;
 
-
 namespace DcsExportLib.Extensions
 {
     internal static class LuaTableExtensions

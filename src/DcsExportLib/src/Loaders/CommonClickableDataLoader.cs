@@ -6,8 +6,6 @@ using DcsExportLib.Models;
 
 using NLua;
 
-using Lua = NLua.Lua;
-
 namespace DcsExportLib.Exporters
 {
     internal class CommonClickableDataLoader : IClickableDataLoader
@@ -51,7 +49,7 @@ namespace DcsExportLib.Exporters
                         }
                     }
 
-                    clickElementsCollection = clickElementsCollection.OrderBy(c => c.Device.DeviceName).ToList();
+                    clickElementsCollection = clickElementsCollection.OrderBy(c => c.Device?.DeviceName).ToList();
 
                 }
                 
@@ -62,23 +60,28 @@ namespace DcsExportLib.Exporters
         private static ClickableElement ExportElementEntry(string elementName, LuaTable elementEntryTable,
             IDictionary<long, string> devices)
         {
-            string hintStr = elementEntryTable["hint"].ToString();
-
-            AircraftDevice device = new AircraftDevice
+            AircraftDevice? elementDevice = null;
+            
+            // get aircraft device, if element has one assigned
+            if (elementEntryTable[DcsVariables.Device] != null)
             {
-                DeviceId = (long)elementEntryTable["device"],
-                DeviceName = devices.Single(d => d.Key == (long)elementEntryTable["device"]).Value
-            };
+                long deviceId = (long)elementEntryTable[DcsVariables.Device];
+
+                elementDevice = new AircraftDevice
+                {
+                    DeviceId = deviceId,
+                    DeviceName = devices.Single(d => d.Key == deviceId).Value
+                };
+            }
             
             // get element parts
             ICollection<ClickableElementPart> parts = GetElementParts(elementEntryTable);
-
-
+            
             ClickableElement clickElement = new ClickableElement
             {
-                Device = device,
+                Device = elementDevice,
                 Name = elementName,
-                Hint = elementEntryTable["hint"].ToString(),
+                Hint = elementEntryTable[DcsVariables.Hint].ToString() ?? string.Empty,
                 ElementParts = parts
             };
 

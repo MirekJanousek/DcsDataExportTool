@@ -17,7 +17,7 @@
         /// <summary>
         /// Gets or sets the device of the element
         /// </summary>
-        public AircraftDevice Device
+        public AircraftDevice? Device
         {
             get;
             set;

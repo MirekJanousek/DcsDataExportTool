@@ -12,14 +12,16 @@ namespace DCSExporterApp
             "F-14", 
             "MiG-21bis", 
             "Mirage F1", 
-            "NS430", 
-            "TF-51D Mustang" 
-
+            "NS430"
         };
 
         public DcsModuleInfo PromptSelectModule(ICollection<DcsModuleInfo> modules)
         {
-            Console.WriteLine("Choose one of the modules below:");
+            Console.WriteLine("Below is the list of your detected installed modules.");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("(NOTE: List contains only modules with exportable data)");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine();
             
             ListInstalledModules(modules);
 
@@ -51,12 +53,17 @@ namespace DCSExporterApp
 
             foreach (var dcsModuleInfo in modules)
             {
-                string lineStr = $"{counter}\t- {dcsModuleInfo.Name}";
+                Console.Write($"{counter}\t- {dcsModuleInfo.Name}");
+                //string lineStr = $"{counter}\t- {dcsModuleInfo.Name}";
 
                 if (_notWorkingModules.Contains(dcsModuleInfo.Name))
-                    lineStr += " (not working)";
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write(" (not working yet)");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
 
-                Console.WriteLine(lineStr);
+                Console.WriteLine();
                 counter++;
             }
         }

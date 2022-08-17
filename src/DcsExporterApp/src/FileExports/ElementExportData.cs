@@ -6,7 +6,7 @@ namespace DCSExporterApp.FileExports
     {
         public string DeviceName { get; init; } = string.Empty;
 
-        public long DeviceId { get; init; }
+        public long? DeviceId { get; init; }
         
         public long ActionId { get; init; }
 
