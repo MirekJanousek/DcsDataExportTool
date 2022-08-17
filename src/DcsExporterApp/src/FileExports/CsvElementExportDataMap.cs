@@ -1,8 +1,6 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
 
-using DcsExportLib.Models;
-
 namespace DCSExporterApp.FileExports
 {
     internal sealed class CsvElementExportDataMap : ClassMap<ElementExportData>
@@ -20,14 +18,15 @@ namespace DCSExporterApp.FileExports
             Map(m => m.Description).Name("Description");
         }
 
-        private string ConvertElementPartFunction(ConvertToStringArgs<ClickableElement> args)
-        {
-            return args.Value.Hint;
-        }
-
+        /// <summary>
+        /// Converts device into the CSV filed
+        /// </summary>
+        /// <param name="args">Conversion arguments</param>
+        /// <returns>String representation of device field</returns>
+        // ReSharper disable once MemberCanBeMadeStatic.Local
         private string ConvertDevice(ConvertToStringArgs<ElementExportData> args)
         {
-            return $"{args.Value.DeviceName}({args.Value.DeviceId})";
+            return args.Value?.DeviceId != null ? $"{args.Value.DeviceName}({args.Value.DeviceId})" : string.Empty;
         }
     }
 }

@@ -18,6 +18,9 @@ namespace DcsExportLib.Executors
             lua[DcsVariables.LockOnOptions] = options;
             lua.DoString("package.path = package.path .. ';Scripts/?.lua'");
 
+            // This variable is needed by NS430 and Mirage-F1 scripts
+            lua["_LAST_CLICK_SOUND_"] = 0;
+
             lua.DoFile(ProgramPaths.ExportFunctionsFilePath);
             
             var loadRes = lua.LoadFile(moduleInfo.ClickableElementsFolderPath);

@@ -8,20 +8,24 @@ namespace DCSExporterApp
         // TODO: remove when not needed
         private readonly string[] _notWorkingModules =
         {
-            "M-2000C", 
-            "F-14", 
-            "MiG-21bis", 
-            "Mirage F1", 
-            "NS430", 
-            "TF-51D Mustang" 
-
+            //"M-2000C", 
+            //"MiG-21bis", 
+            //"Mirage F1", 
+           //"NS430"
         };
 
-        public DcsModuleInfo PromptSelectModule(ICollection<DcsModuleInfo> modules)
+        public DcsModuleInfo PromptSelectModule(ICollection<DcsModuleInfo> modules, string searchedPath)
         {
-            Console.WriteLine("Choose one of the modules below:");
+            Console.WriteLine("Below is the list of your detected installed modules.");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"* DCS path was set to: {searchedPath}");
+            Console.WriteLine("* List contains only modules with exportable data");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine();
             
             ListInstalledModules(modules);
+
+            Console.WriteLine();
 
             int optionInt = PromptUserNumberEntry("Type the number of module you would like to export and press enter:", 1, modules.Count);
 
@@ -51,12 +55,17 @@ namespace DCSExporterApp
 
             foreach (var dcsModuleInfo in modules)
             {
-                string lineStr = $"{counter}\t- {dcsModuleInfo.Name}";
+                Console.Write($"{counter}\t- {dcsModuleInfo.Name}");
+                //string lineStr = $"{counter}\t- {dcsModuleInfo.Name}";
 
                 if (_notWorkingModules.Contains(dcsModuleInfo.Name))
-                    lineStr += " (not working)";
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write(" (not working yet)");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
 
-                Console.WriteLine(lineStr);
+                Console.WriteLine();
                 counter++;
             }
         }

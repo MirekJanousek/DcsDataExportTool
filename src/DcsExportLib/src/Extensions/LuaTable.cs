@@ -1,6 +1,5 @@
 ﻿using NLua;
 
-
 namespace DcsExportLib.Extensions
 {
     internal static class LuaTableExtensions
@@ -24,7 +23,12 @@ namespace DcsExportLib.Extensions
 
             return table.Values.OfType<T>().Count() == table.Values.Count;
         }
-        
+
+        public static bool ValuesAreNumbers(this LuaTable table)
+        {
+            return table.Values.OfType<decimal>().Count() + table.Values.OfType<long>().Count() + table.Values.OfType<double>().Count() == table.Values.Count;
+        }
+
         public static bool AreCorrectTypes<T1, T2>(this LuaTable table)
         {
             bool areCorrectKeys = table.KeysAreOfType<T1>();

@@ -8,13 +8,13 @@
             set => throw new NotImplementedException();
         }
 
-        public decimal MinLimit
+        public decimal? MinLimit
         {
             get => throw new NotImplementedException();
             set => throw new NotImplementedException();
         }
 
-        public decimal MaxLimit
+        public decimal? MaxLimit
         {
             get => throw new NotImplementedException();
             set => throw new NotImplementedException();

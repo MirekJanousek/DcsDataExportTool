@@ -35,8 +35,8 @@ namespace DCSExporterApp.FileExports
                         {
                             ElementName = element.Name,
                             Description = element.Hint,
-                            DeviceId = element.Device.DeviceId,
-                            DeviceName = element.Device.DeviceName,
+                            DeviceId = element.Device?.DeviceId ?? null,
+                            DeviceName = element.Device?.DeviceName ?? string.Empty,
                             ElementType = part.Type,
                             PartDcsId = part.DcsId,
                             ActionId = part.ActionId,

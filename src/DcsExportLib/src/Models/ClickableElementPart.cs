@@ -8,20 +8,20 @@
             set;
         } = ElementPartType.Null;
 
-        public long DcsId
+        public long? DcsId
         {
             get;
             set;
-        } = -1;
+        } = null;
 
         /// <summary>
         /// Gets or sets the Action ID of the <see cref="ClickableElementPart"/>
         /// </summary>
-        public long ActionId
+        public long? ActionId
         {
             get;
             set;
-        } = -1;
+        } = null;
 
 
         public IElementStepAction ElementAction
